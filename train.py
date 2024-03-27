@@ -367,13 +367,18 @@ if __name__ == '__main__':
 
             # Create model
             # model = DynamicNN([2, 50, 100, 50, 2]).to(device)
-            model = ResNet18(num_classes=4).to(device)
-            # model = FCNN(25, 3).to(device)
-            # model = FCN().to(device)
+            model_layer_1_deep = trial.suggest_int("model_layer_1_deep", 1, 2)
+            model_layer_2_deep = trial.suggest_int("model_layer_2_deep", 1, 2)
+            model_layer_3_deep = trial.suggest_int("model_layer_3_deep", 1, 2)
+            model_layer_4_deep = trial.suggest_int("model_layer_4_deep", 1, 2)
+            model = ResNet18(num_classes=4, block_num=[model_layer_1_deep,
+                                                       model_layer_2_deep,
+                                                       model_layer_3_deep,
+                                                       model_layer_4_deep]).to(device)
 
             # Generate the optimizers.
-            optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD", "Adagrad"])
-            lr = trial.suggest_float("lr", 1e-4, 1e-2, log=True)
+            optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD", "Adagrad","SGDM"])
+            lr = trial.suggest_float("lr", 5e-4, 1e-2, log=True)
             optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
 
             # Visualize model
@@ -381,12 +386,8 @@ if __name__ == '__main__':
             # Define Optimizer and Loss
             criterion = nn.CrossEntropyLoss()
             # criterion = nn.MSELoss()
-            # optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-            # optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
-            # optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
-            step = trial.suggest_float('step_size', 0.2, 0.6)
-            gamma = trial.suggest_float('gamma', 0.01, 0.5)
-            scheduler = StepLR(optimizer, step_size=int(step * args.epochs), gamma=gamma)
+
+            scheduler = StepLR(optimizer, step_size=int(0.2 * args.epochs), gamma=0.2)
             # Define list to record acc & loss for plt
             train_loss = np.array([])
             train_acc = np.array([])
@@ -406,7 +407,7 @@ if __name__ == '__main__':
                 scheduler.step()
 
             # Draw loss & acc
-            # draw_regression_loss(train_loss, val_loss)
+            draw_regression_loss(train_loss, val_loss)
 
             # 记录运行次数的变量
             trials = np.load('trials.npy')
