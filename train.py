@@ -33,6 +33,21 @@ import matplotlib.ticker as m_tick
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+model_path = './model'
+if not os.path.exists(model_path):
+    # 如果路径不存在，则创建它
+    os.makedirs(model_path)
+    print("路径已创建:", model_path)
+else:
+    print("路径已存在:", model_path)
+
+trials_log_path = './trials_log'
+if not os.path.exists(trials_log_path):
+    # 如果路径不存在，则创建它
+    os.makedirs(trials_log_path)
+    print("路径已创建:", trials_log_path)
+else:
+    print("路径已存在:", trials_log_path)
 
 def set_seed(seed: int):
     # 随机种子设定
@@ -256,14 +271,6 @@ def transform(x, y):
 
 
 def main(args: argparse.Namespace):
-
-    model_path = './model'
-    if not os.path.exists(model_path):
-        # 如果路径不存在，则创建它
-        os.makedirs(model_path)
-        print("路径已创建:", model_path)
-    else:
-        print("路径已存在:", model_path)
 
     print('---------Train on: ' + device + '----------')
 
